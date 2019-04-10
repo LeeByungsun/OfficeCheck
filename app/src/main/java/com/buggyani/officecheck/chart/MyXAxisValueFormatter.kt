@@ -1,13 +1,9 @@
 package com.buggyani.officecheck.chart
 
 import android.util.Log
-import com.buggyani.officecheck.OfficeApplication
 import com.buggyani.officecheck.OfficeApplication.Companion.lableCount
 import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.formatter.ValueFormatter
-
-import java.text.DecimalFormat
 
 class MyXAxisValueFormatter(private val mValues: Array<String>) : ValueFormatter() {
     private val TAG = javaClass.simpleName

@@ -5,7 +5,6 @@ package com.buggyani.officecheck.adapter
  */
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,13 +40,8 @@ class CompanyListAdapter(postsData: ArrayList<CompanyData>) :
     }
 
 
-    fun removeAt(position: Int) {
-        postsList!!.removeAt(position)
-        notifyItemRemoved(position);
-    }
-
     class CompnayViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var compnay = view.company
-        var addr = view.addr
+        var compnay = view.company!!
+        var addr = view.addr!!
     }
 }

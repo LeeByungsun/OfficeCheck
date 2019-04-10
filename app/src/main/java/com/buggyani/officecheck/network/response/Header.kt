@@ -1,4 +1,4 @@
-package com.buggyani.officecheck.model
+package com.buggyani.officecheck.network.response
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

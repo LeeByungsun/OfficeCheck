@@ -16,7 +16,7 @@ import com.buggyani.officecheck.adapter.CompanyListAdapter
 import com.buggyani.officecheck.adapter.RecyclerItemClickListener
 import com.buggyani.officecheck.databinding.ActivityMainBinding
 import com.buggyani.officecheck.model.CompanyData
-import com.buggyani.officecheck.model.Item
+import com.buggyani.officecheck.network.response.Item
 import com.buggyani.officecheck.network.APIInfo.Companion.API_KEY
 import com.buggyani.officecheck.network.response.NpsBplcInfoInqireServiceResponseVo
 import com.google.gson.Gson
@@ -83,14 +83,14 @@ class MainActivity : AppCompatActivity() {
 
         }
         startProgress()
-        Log.e(TAG, "|" + companyName + "|")
+        Log.e(TAG, "|$companyName|")
         if (setName) {
             disposable = api_Server.getCompanyData(companyName!!, regNumber, 1, API_KEY, 1000)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ data: String? ->
                     Log.e(TAG, data)
-                    var jsonObj: JSONObject
+                    val jsonObj: JSONObject
                     try {
                         jsonObj = XML.toJSONObject(data)
                         converToJson(jsonObj.toString(), setName)
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ data: String? ->
 //                    Log.e(TAG, data)
-                    var jsonObj: JSONObject
+                    val jsonObj: JSONObject
                     try {
                         jsonObj = XML.toJSONObject(data)
                         converToJson(jsonObj.toString(), setName)
@@ -135,10 +135,10 @@ class MainActivity : AppCompatActivity() {
     private fun converToJson(data: String, setName: Boolean) {
         val gson = Gson()
         val rsp = gson.fromJson(data, NpsBplcInfoInqireServiceResponseVo::class.java)
-        var item: ArrayList<Item> = rsp.response.body.items.item
+        val item: ArrayList<Item> = rsp.response.body.items.item
         var itemTempList = ArrayList<CompanyData>()
         item.forEach {
-            var regNum: Int = it.bzowrRgstNo.replace("*", "").toInt()
+            val regNum: Int = it.bzowrRgstNo.replace("*", "").toInt()
             if (setName) {
                 itemTempList.add(CompanyData(it.wkplNm, it.wkplRoadNmDtlAddr, regNum, it.seq, it.dataCrtYm))
             } else {
@@ -146,8 +146,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-        val deleteDupData: HashSet<CompanyData> = HashSet<CompanyData>(itemTempList)
-        itemTempList = ArrayList<CompanyData>(deleteDupData);
+        val deleteDupData: HashSet<CompanyData> = HashSet(itemTempList)
+        itemTempList = ArrayList(deleteDupData);
         itemList.clear()
         itemTempList.forEach {
             itemList.add(it)
@@ -209,8 +209,8 @@ class MainActivity : AppCompatActivity() {
 
                     override fun onItemClick(view: View, position: Int) {
                         Log.e(TAG, "onItemClick = $position")
-                        regNumber = itemList.get(position).regnum
-                        companyName = itemList.get(position).name
+                        regNumber = itemList[position].regnum
+                        companyName = itemList[position].name
 //                        itemList.clear()
 //                        companyDataAdpter.notifyDataSetChanged()
                         listView.visibility = View.INVISIBLE
@@ -221,20 +221,20 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun getCompanyDetailData(seq: Int, date: Int) {
+    private fun getCompanyDetailData(seq: Int, date: Int) {
 
-        Log.e(TAG, "|" + seq + "|")
+        Log.e(TAG, "|$seq|")
         startProgress()
         disposable = api_Server.getDetailCompanyData(seq, API_KEY)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ data: String? ->
                 Log.e(TAG, data)
-                var jsonObj: JSONObject
+                val jsonObj: JSONObject
                 try {
                     jsonObj = XML.toJSONObject(data)
                     Log.d(TAG, jsonObj.toString())
-                    var item = converToJsonDetail(jsonObj.toString())
+                    val item = converToJsonDetail(jsonObj.toString())
                     println(seq)
                     println(date)
 
@@ -254,16 +254,15 @@ class MainActivity : AppCompatActivity() {
     private fun converToJsonDetail(data: String): Item {
         val gson = Gson()
         val rsp = gson.fromJson(data, NpsBplcInfoInqireServiceResponseVo::class.java)
-        var item: Item = rsp.response.body.item
-        return item
+        return  rsp.response.body.item
     }
 
-    fun hideKeyboard() {
+    private fun hideKeyboard() {
         val inputManager: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(currentFocus!!.windowToken, InputMethodManager.SHOW_FORCED)
     }
 
-    fun startProgress() {
+    private fun startProgress() {
 //        progress_layout.invalidate()
         runOnUiThread {
             progress_layout.visibility = View.VISIBLE
@@ -271,7 +270,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun stopProgress() {
+    private fun stopProgress() {
         runOnUiThread {
             progress_layout.visibility = View.GONE
             progress_circular.visibility = View.GONE
@@ -280,8 +279,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun sendActivity(item: Item) {
         val intent = Intent(this, DetailActivity::class.java)
-        intent.putExtra("companydetail", item);
-        intent.putExtra("seqlist", itemList);
+        intent.putExtra("companydetail", item)
+        intent.putExtra("seqlist", itemList)
         stopProgress()
         startActivity(intent)
         itemList.clear()
